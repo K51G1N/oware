@@ -80,7 +80,7 @@ let returnHole n board =
 let printHoles board =
    let rec print count =
       match count with 
-      | 12 -> printfn "House %i: %i" count (getSeeds count board)
+      | 12 -> printfn " House %i: %i" count (getSeeds count board)
       | 13 -> ()
       | _ -> printfn "%s" (returnHole count board);(print (count+1))
    print 1
@@ -111,4 +111,3 @@ let main _ =
    // g17e4476: Get's us into the game
     let beginning = beginGame (start North)
     0
-  
