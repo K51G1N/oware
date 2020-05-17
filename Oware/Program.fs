@@ -41,20 +41,20 @@ let getSeeds n board =
 let incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
     //Used to increment preceeding houses
     match n with 
-    //South side
-    |1 -> (aN+1,bN,cN,dN,eN,fN,aN',bN',cN',dN',eN',fN')
-    |2 -> (aN,bN+1,cN,dN,eN,fN,aN',bN',cN',dN',eN',fN')
-    |3 -> (aN,bN,cN+1,dN,eN,fN,aN',bN',cN',dN',eN',fN')
-    |4 -> (aN,bN,cN,dN+1,eN,fN,aN',bN',cN',dN',eN',fN')
-    |5 -> (aN,bN,cN,dN,eN+1,fN,aN',bN',cN',dN',eN',fN')
-    |6 -> (aN,bN,cN,dN,eN,fN+1,aN',bN',cN',dN',eN',fN')
-    //North side 
-    |7 -> (aS,bS,cS,dS,eS,fS,aS'+1,bS',cS',dS',eS',fS')
-    |8 -> (aS,bS,cS,dS,eS,fS,aS',bS'+1,cS',dS',eS',fS')
-    |9 -> (aS,bS,cS,dS,eS,fS,aS',bS',cS'+1,dS',eS',fS')
-    |10 -> (aS,bS,cS,dS,eS,fS,aS',bS',cS',dS'+1,eS',fS')
-    |11 -> (aS,bS,cS,dS,eS,fS,aS',bS',cS',dS',eS'+1,fS')
-    |12 -> (aS,bS,cS,dS,eS,fS,aS',bS',cS',dS',eS',fS'+1)
+    //North side
+    |1 -> (aN+1,bN,cN,dN,eN,fN,aN,bN,cN,dN,eN,fN)
+    |2 -> (aN,bN+1,cN,dN,eN,fN,aN,bN,cN,dN,eN,fN)
+    |3 -> (aN,bN,cN+1,dN,eN,fN,aN,bN,cN,dN,eN,fN)
+    |4 -> (aN,bN,cN,dN+1,eN,fN,aN,bN,cN,dN,eN,fN)
+    |5 -> (aN,bN,cN,dN,eN+1,fN,aN,bN,cN,dN,eN,fN)
+    |6 -> (aN,bN,cN,dN,eN,fN+1,aN,bN,cN,dN,eN,fN)
+    //South side 
+    |7 -> (aS,bS,cS,dS,eS,fS,aS+1,bS,cS,dS,eS,fS)
+    |8 -> (aS,bS,cS,dS,eS,fS,aS,bS+1,cS,dS,eS,fS)
+    |9 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS+1,dS,eS,fS)
+    |10 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS+1,eS,fS)
+    |11 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS+1,fS)
+    |12 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS,fS+1)
     |_ -> failwith "{incrementSeed} out of range"
 
 
@@ -101,21 +101,21 @@ let chooseHouse n board =
     //g19p6350
     //The player takes their turn given a house number 
     //then the chosen house is set to 0
-    let (aN,bN,cN,dN,eN,fN) = board.PlayerA.houses
-    let (aS,bS,cS,dS,eS,fS) = board.PlayerB.houses
+    let (aN,bN,cN,dN,eN,fN) = board.PlayerA.holes
+    let (aS,bS,cS,dS,eS,fS) = board.PlayerB.holes
     match n with
-    |1  -> {board with PlayerA = {board.PlayerA with houses = (0,bN,cN,dN,eN,fN)} }
-    |2  -> {board with PlayerA = {board.PlayerA with houses = (aN,0,cN,dN,eN,fN)} }
-    |3  -> {board with PlayerA = {board.PlayerA with houses = (aN,bN,0,dN,eN,fN)} } 
-    |4  -> {board with PlayerA = {board.PlayerA with houses = (aN,bN,cN,0,eN,fN)} }
-    |5  -> {board with PlayerA = {board.PlayerA with houses = (aN,bN,cN,dN,0,fN)} } 
-    |6  -> {board with PlayerA = {board.PlayerA with houses = (aN,bN,cN,dN,eN,0)} } 
-    |7  -> {board with PlayerB = {board.PlayerB with houses = (0,bS,cS,dS,eS,fS)} }
-    |8  -> {board with PlayerB = {board.PlayerB with houses = (aS,0,cS,dS,eS,fS)} }
-    |9  -> {board with PlayerB = {board.PlayerB with houses = (aS,bS,0,dS,eS,fS)} }
-    |10 -> {board with PlayerB = {board.PlayerB with houses = (aS,bS,cS,0,eS,fS)} } 
-    |11 -> {board with PlayerB = {board.PlayerB with houses = (aS,bS,cS,dS,0,fS)} }
-    |12 -> {board with PlayerB = {board.PlayerB with houses = (aS,bS,cS,dS,eS,0)} }
+    |1  -> {board with PlayerA = {board.PlayerA with holes = (0,bN,cN,dN,eN,fN)} }
+    |2  -> {board with PlayerA = {board.PlayerA with holes = (aN,0,cN,dN,eN,fN)} }
+    |3  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,0,dN,eN,fN)} } 
+    |4  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,0,eN,fN)} }
+    |5  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,dN,0,fN)} } 
+    |6  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,dN,eN,0)} } 
+    |7  -> {board with PlayerB = {board.PlayerB with holes = (0,bS,cS,dS,eS,fS)} }
+    |8  -> {board with PlayerB = {board.PlayerB with holes = (aS,0,cS,dS,eS,fS)} }
+    |9  -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,0,dS,eS,fS)} }
+    |10 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,0,eS,fS)} } 
+    |11 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,0,fS)} }
+    |12 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,eS,0)} }
     |_  -> failwith "{chooseHouse} house is not in 1 and 12 range."
 
 //Used in the useHouse function below
