@@ -36,6 +36,21 @@ let getSeeds n board =
    | 12 -> fS
    | _ -> failwith "Invalid Choice of hole"  // g17e4476: If user picks an invalid hole
 
+
+//g18m6734 check if a house is not empty
+let empty n board = 
+   (getSeeds n board) > 0 // will only return true or false
+//g18m6734 checks if a move is valid
+let valid board = 
+   match board = (aN =6, bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)  with 
+   |// I want it to check if a move is valid before making the move HELP ME!
+let useHouse n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
+   match valid (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) with
+   | true  -> incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
+   | false -> failwith "Not your move"
+   //failwith "Not implemented"
+
+
 //Used in the useHouse function 
 //g19p6350
 let incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
