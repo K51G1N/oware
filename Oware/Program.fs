@@ -9,12 +9,12 @@ type StartingPosition =
 type Player = {  //A = North, B = South
     score: int
     holes: int*int*int*int*int*int  // g17e4476: holes/house interchangeable.
-    nrPieces: int                   // g17e4476: nr of pieces on the board
+    nrSeeds: int                   // g17e4476: nr of pieces on the board
 }
 type Board = {
    PlayerA: Player  
    PlayerB: Player
-   Turn: StartingPosition //g17e4476: North/South we let South go first
+   Turn: StartingPosition //g17e4476: North/South we let North go first
 }
 
 
@@ -40,8 +40,8 @@ let useHouse n board = failwith "Not implemented"
 
 let start position = 
    let hole = (4,4,4,4,4,4)
-   let pA = {holes = hole ; score = 0; nrPieces = 24 }
-   let pB = {holes = hole ; score = 0; nrPieces = 24 }
+   let pA = {holes = hole ; score = 0; nrSeeds = 24 }
+   let pB = {holes = hole ; score = 0; nrSeeds = 24 }
    {PlayerA = pA; PlayerB = pB; Turn = position}
 
 // g17e4476: The tuple set up as specified to return NorthScore (NS) and South Score (SS)
