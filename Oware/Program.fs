@@ -171,23 +171,6 @@ let useHouse n board =
          | _ -> { updatedBoard with Turn = turn }
 
 
-
-(*
-//g18m6734 check if a house is not empty
-let empty n board = 
-   (getSeeds n board) > 0 // will only return true or false
-//g18m6734 checks if a move is valid
-let valid board = 
-   match board = (aN =6, bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)  with 
-   |// I want it to check if a move is valid before making the move HELP ME!
-let useHouse n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
-   match valid (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) with
-   | true  -> incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
-   | false -> failwith "Not your move"
-   //failwith "Not implemented"
-   *)
-
-
 let returnScore board = 
    let NS = board.PlayerA.score |> string
    let SS = board.PlayerB.score |> string
