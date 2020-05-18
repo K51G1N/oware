@@ -35,6 +35,12 @@ let getSeeds n board =
    | 12 -> fS
    | _ -> failwith "Invalid Choice of hole"  // g17e4476: If user picks an invalid hole
 
+let opponentSeeds board =
+   let turn = board.Turn
+   match turn with
+   | North -> board.PlayerA.nrSeeds
+   | South -> board.PlayerB.nrSeeds
+
 //g19p6350
 let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
     //Used to increment preceeding houses
@@ -191,7 +197,7 @@ let useHouse n board =
             | North -> South
             | South -> North
 
-         match 1 with
+         match opponentSeeds board with
          | 0 -> originalState
          | _ -> { updatedBoard with Turn = turn }
 
