@@ -138,11 +138,47 @@ let checkOwnHole n position =
    // will do so later if time permits
 
 
+
 let nextPlayersTurn position = 
     //Simple function that is used to alternate player turns.
     match position with
     | South -> North //this means that South (player A) just had their turn and now it is North's (player two's) turn.
     | North -> South //this means that North (player B) just had their turn and now it is South's (player one's) turn
+
+let returnScore board = 
+   let NS = board.PlayerA.score |> string
+   let SS = board.PlayerB.score |> string
+   "North Score: " + NS + "\nSouth Score: " + SS + "\n"
+
+// g17e4476: returns the nth Hole and the nr of seeds in the nth hole
+let returnHole n board = 
+   let hole = getSeeds n board
+   " House " + string n + ": " + string hole
+
+ // g17e4476: recursively goes through each hole displaying the contents of the hole. Impure output
+let printHoles board =
+   let rec print count =
+      match count with 
+      | 12 -> printfn " House %i: %i" count (getSeeds count board)
+      | 13 -> ()
+      | _ -> printfn "%s" (returnHole count board);(print (count+1))
+   print 1
+
+
+//We setup the board over here.
+let start position = 
+   let hole = (4,4,4,4,4,4)
+   let pA = {holes = hole ; score = 0; nrSeeds = 24 }
+   let pB = {holes = hole ; score = 0; nrSeeds = 24 }
+   {PlayerA = pA; PlayerB = pB; Turn = position}
+
+//g17t4564: Return the current number of seeds available on the opponent's side
+let OpponentSeedCount board = 
+    let OppSeeds = 
+        match board.Turn with
+        |North -> board.PlayerB.nrSeeds //g17t4564 : holes in the South side
+        |South -> board.PlayerA.nrSeeds   //g17t4564 : holes in the North side
+    OppSeeds
 
 let useHouse n board =
    let originalState = board //Need to protec the original state of the board if we make an invalid move
@@ -186,50 +222,14 @@ let useHouse n board =
          // The board itself needs to contain the new score  
          let updatedBoard = {board with PlayerA = pA; PlayerB = pB}
          //Pass the turn
-         let turn = 
+         let turn =
             match board.Turn with
-            | North -> South
-            | South -> North
+            |North -> South
+            |South -> North
 
-         match 1 with
+         match OpponentSeedCount board with
          | 0 -> originalState
-         | _ -> { updatedBoard with Turn = turn }
-
-
-let returnScore board = 
-   let NS = board.PlayerA.score |> string
-   let SS = board.PlayerB.score |> string
-   "North Score: " + NS + "\nSouth Score: " + SS + "\n"
-
-// g17e4476: returns the nth Hole and the nr of seeds in the nth hole
-let returnHole n board = 
-   let hole = getSeeds n board
-   " House " + string n + ": " + string hole
-
- // g17e4476: recursively goes through each hole displaying the contents of the hole. Impure output
-let printHoles board =
-   let rec print count =
-      match count with 
-      | 12 -> printfn " House %i: %i" count (getSeeds count board)
-      | 13 -> ()
-      | _ -> printfn "%s" (returnHole count board);(print (count+1))
-   print 1
-
-
-//We setup the board over here.
-let start position = 
-   let hole = (4,4,4,4,4,4)
-   let pA = {holes = hole ; score = 0; nrSeeds = 24 }
-   let pB = {holes = hole ; score = 0; nrSeeds = 24 }
-   {PlayerA = pA; PlayerB = pB; Turn = position}
-
-//g17t4564: Return the current number of seeds available on the opponent's side
-let OpponentSeedCount board = 
-    let OppSeeds = 
-        match board.Turn with
-        |North -> board.PlayerB.nrSeeds //g17t4564 : holes in the South side
-        |South -> board.PlayerA.nrSeeds   //g17t4564 : holes in the North side
-    OppSeeds
+         | _ -> { updatedBoard with Turn = board.Turn }
 
    // g17e4476: We can play the game. Impure input
 let beginGame board = 
