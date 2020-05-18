@@ -115,8 +115,8 @@ let chosenHole n board =
 let nextPlayersTurn position = 
     //Simple function that is used to alternate player turns.
     match position with
-    | South -> North //this means that South (player one) just had their turn and now it is North's (player two's) turn.
-    | North -> South //this means that North (player two) just had their turn and now it is South's (player one's) turn
+    | South -> North //this means that South (player A) just had their turn and now it is North's (player two's) turn.
+    | North -> South //this means that North (player B) just had their turn and now it is South's (player one's) turn
 
 let useHouse n board =
    let originalState = board //Need to protec the original state of the board if we make an invalid move
@@ -154,34 +154,20 @@ let useHouse n board =
          let board = {board with PlayerA = pA; PlayerB = pB; Turn = board.Turn}
         
          //Since we've sown the seeds we now need to update the scoreboard, similar to the way the board was updated.
-         let scoreboard = failwith "Not yet implemented"
-         let pA = failwith ""
-         let pB = failwith ""
+         let scoreboard = incrementScore endHole board.currentTurn board 
+         let pA = {board.PlayerA with holes = scoreboard.PlayerA.holes; score = scoreboard.PlayerA.score}
+         let pB = {board.PlayerB with holes = scoreboard.PlayerB.holes; score = scoreboard.PlayerB.score}
          // The board itself needs to contain the new score  
-         let updatedBoard = failwith ""
+         let updatedBoard = {board with PlayerA = pA; PlayerB = pB}
          //Pass the turn
-         let turn = failwith "Not yet implemented -> passTurn board.Turn"
+         let turn = 
+            match turn with
+            | North -> South
+            | South -> North
 
          match 1 with
          | 0 -> originalState
          | _ -> { updatedBoard with Turn = turn }
-
-
-
-(*
-//g18m6734 check if a house is not empty
-let empty n board = 
-   (getSeeds n board) > 0 // will only return true or false
-//g18m6734 checks if a move is valid
-let valid board = 
-   match board = (aN =6, bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)  with 
-   |// I want it to check if a move is valid before making the move HELP ME!
-let useHouse n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
-   match valid (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) with
-   | true  -> incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
-   | false -> failwith "Not your move"
-   //failwith "Not implemented"
-   *)
 
 
 let returnScore board = 
