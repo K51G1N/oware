@@ -155,13 +155,16 @@ let useHouse n board =
          let board = {board with PlayerA = pA; PlayerB = pB; Turn = board.Turn}
         
          //Since we've sown the seeds we now need to update the scoreboard, similar to the way the board was updated.
-         let scoreboard = failwith "Not yet implemented"
-         let pA = failwith ""
-         let pB = failwith ""
+         let scoreboard = incrementScore endHole board.currentTurn board 
+         let pA = {board.PlayerA with holes = scoreboard.PlayerA.holes; score = scoreboard.PlayerA.score}
+         let pB = {board.PlayerB with holes = scoreboard.PlayerB.holes; score = scoreboard.PlayerB.score}
          // The board itself needs to contain the new score  
-         let updatedBoard = failwith ""
+         let updatedBoard = {board with PlayerA = pA; PlayerB = pB}
          //Pass the turn
-         let turn = failwith "Not yet implemented -> passTurn board.Turn"
+         let turn = 
+            match turn with
+            | North -> South
+            | South -> North
 
          match 1 with
          | 0 -> originalState
