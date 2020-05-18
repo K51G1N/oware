@@ -35,6 +35,7 @@ let getSeeds n board =
    | 12 -> fS
    | _ -> failwith "Invalid Choice of hole"  // g17e4476: If user picks an invalid hole
 
+   // This returns the nr of seeds on the opponents side
 let opponentSeeds board =
    let turn = board.Turn
    match turn with
@@ -60,7 +61,6 @@ let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
     |11 ->(aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS+1,fS)
     |12 ->(aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS+1)
     |_ -> failwith "{incrementSeedCount} out of range"
-
 
 let chosenHole n board = 
     //g19p6350
@@ -164,7 +164,6 @@ let useHouse n board =
       match getSeeds n board with 
       | 0 -> board  //User has chosen an empty hole
       |_ ->
-
          let (aN,bN,cN,dN,eN,fN),(aS,bS,cS,dS,eS,fS) = (chosenHole n board).PlayerA.holes,(chosenHole n board).PlayerB.holes 
          let holesUpdated = (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
          let nrSeeds = getSeeds n board
@@ -197,7 +196,7 @@ let useHouse n board =
             | North -> South
             | South -> North
 
-         match opponentSeeds board with
+         match opponentSeeds board with   //If 0 is returned then an invalid move and we return the original board.
          | 0 -> originalState
          | _ -> { updatedBoard with Turn = turn }
 
