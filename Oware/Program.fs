@@ -55,6 +55,33 @@ let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
     |12 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS,fS+1)
     |_ -> failwith "{incrementSeedCount} out of range"
 
+
+
+let incScore prevHouse playerTurn board= 
+  //This function will update the score
+  let rec addScore  prevHouse board =
+    let pieceCountP1 = board.PlayerB.nrSeeds
+    let pieceCountP2 = board.PlayerA.nrSeeds
+    match (prevHouse > 0 && prevHouse < 13) with //to insure the prevoius house is in range
+    |true ->
+        match playerTurn=North with
+        |true -> match getSeeds prevHouse board, prevHouse<7 && prevHouse>0, (pieceCountP1 - 2 > 0 || (pieceCountP2 = 0 && pieceCountP1 = 2)),(pieceCountP1 = 3 && pieceCountP2 = 0) || (pieceCountP1 - 3 > 0 ) with 
+                 | 2,true,true,_ -> let tempBoard = (addScore (prevHouse - 1) (chosenHole prevHouse board)) //board update
+                                    {tempBoard with PlayerA = {tempBoard.PlayerA with score = tempBoard.PlayerA.score + 2}; PlayerB = {tempBoard.PlayerA with nrSeeds = tempBoard.PlayerB.nrSeeds - 2}}//adds to score
+                 | 3,true,_,true -> let tempBoard = (addScore (prevHouse - 1) (chosenHole prevHouse board))
+                                    {tempBoard with PlayerA = {tempBoard.PlayerA with score = tempBoard.PlayerA.score + 3}; PlayerB = {tempBoard.PlayerA with nrSeeds = tempBoard.PlayerB.nrSeeds - 3}}
+                 | _ -> board
+        |_  -> match getSeeds prevHouse board, prevHouse<13 && prevHouse>6, (pieceCountP2 - 2 > 0 || (pieceCountP2 = 2 && pieceCountP1 = 0)), (pieceCountP2 - 3 > 0 || (pieceCountP2 = 3 && pieceCountP1 = 0)) with //collect from north side if it's south's turn
+               | 2, true,true,_ -> let tempBoard = (addScore (prevHouse - 1) (chosenHole prevHouse board))
+                                   {tempBoard with PlayerB = {tempBoard.PlayerB with score = tempBoard.PlayerB.score + 2}; PlayerA = {tempBoard.PlayerB with nrSeeds = tempBoard.PlayerA.nrSeeds - 2}}
+               | 3, true,_,true ->let tempBoard = (addScore (prevHouse - 1) (chosenHole prevHouse board))
+                                  {tempBoard with PlayerB = {tempBoard.PlayerB with score = tempBoard.PlayerB.score + 3}; PlayerA = {tempBoard.PlayerB with nrSeeds = tempBoard.PlayerA.nrSeeds - 3}}
+               | _ -> board
+    |_ -> board    
+  
+  addScore prevHouse board
+
+
 // g17e4476: The tuple set up as specified to return NorthScore (NS) and South Score (SS)
 let score board =
    let southScore,northScore = board.PlayerA.score , board.PlayerB.score 
