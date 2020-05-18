@@ -61,7 +61,6 @@ let score board =
    southScore,northScore  
 // ^^^ Sets up the string of the score for north and south (NS, SS respectively)
 
-
 // g17e4476: returns the state of the game using the strings as specified
 let gameState board =
    let a,b = score board // g17e4476: player a's score, player b's score (Ns and SS respectively)
