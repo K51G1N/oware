@@ -55,7 +55,26 @@ let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
     |12 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS,fS+1)
     |_ -> failwith "{incrementSeedCount} out of range"
 
-
+let chosenHole n board = 
+    //g19p6350
+    //The player takes their turn given a house number 
+    //then the chosen house is set to 0
+    let (aN,bN,cN,dN,eN,fN) = board.PlayerA.holes
+    let (aS,bS,cS,dS,eS,fS) = board.PlayerB.holes
+    match n with
+    |1  -> {board with PlayerA = {board.PlayerA with holes = (0,bN,cN,dN,eN,fN)} }
+    |2  -> {board with PlayerA = {board.PlayerA with holes = (aN,0,cN,dN,eN,fN)} }
+    |3  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,0,dN,eN,fN)} } 
+    |4  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,0,eN,fN)} }
+    |5  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,dN,0,fN)} } 
+    |6  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,dN,eN,0)} } 
+    |7  -> {board with PlayerB = {board.PlayerB with holes = (0,bS,cS,dS,eS,fS)} }
+    |8  -> {board with PlayerB = {board.PlayerB with holes = (aS,0,cS,dS,eS,fS)} }
+    |9  -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,0,dS,eS,fS)} }
+    |10 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,0,eS,fS)} } 
+    |11 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,0,fS)} }
+    |12 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,eS,0)} }
+    |_  -> failwith "{chooseHouse} house is not in 1 and 12 range."
 
 let incScore prevHouse playerTurn board= 
   //This function will update the score
@@ -119,27 +138,6 @@ let checkOwnHole n position =
    // will do so later if time permits
 
 
-let chosenHole n board = 
-    //g19p6350
-    //The player takes their turn given a house number 
-    //then the chosen house is set to 0
-    let (aN,bN,cN,dN,eN,fN) = board.PlayerA.holes
-    let (aS,bS,cS,dS,eS,fS) = board.PlayerB.holes
-    match n with
-    |1  -> {board with PlayerA = {board.PlayerA with holes = (0,bN,cN,dN,eN,fN)} }
-    |2  -> {board with PlayerA = {board.PlayerA with holes = (aN,0,cN,dN,eN,fN)} }
-    |3  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,0,dN,eN,fN)} } 
-    |4  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,0,eN,fN)} }
-    |5  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,dN,0,fN)} } 
-    |6  -> {board with PlayerA = {board.PlayerA with holes = (aN,bN,cN,dN,eN,0)} } 
-    |7  -> {board with PlayerB = {board.PlayerB with holes = (0,bS,cS,dS,eS,fS)} }
-    |8  -> {board with PlayerB = {board.PlayerB with holes = (aS,0,cS,dS,eS,fS)} }
-    |9  -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,0,dS,eS,fS)} }
-    |10 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,0,eS,fS)} } 
-    |11 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,0,fS)} }
-    |12 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,eS,0)} }
-    |_  -> failwith "{chooseHouse} house is not in 1 and 12 range."
-
 let nextPlayersTurn position = 
     //Simple function that is used to alternate player turns.
     match position with
@@ -182,14 +180,14 @@ let useHouse n board =
          let board = {board with PlayerA = pA; PlayerB = pB; Turn = board.Turn}
         
          //Since we've sown the seeds we now need to update the scoreboard, similar to the way the board was updated.
-         let scoreboard = incrementScore endHole board.currentTurn board 
+         let scoreboard = incScore endHole board.Turn board 
          let pA = {board.PlayerA with holes = scoreboard.PlayerA.holes; score = scoreboard.PlayerA.score}
          let pB = {board.PlayerB with holes = scoreboard.PlayerB.holes; score = scoreboard.PlayerB.score}
          // The board itself needs to contain the new score  
          let updatedBoard = {board with PlayerA = pA; PlayerB = pB}
          //Pass the turn
          let turn = 
-            match turn with
+            match board.Turn with
             | North -> South
             | South -> North
 
@@ -217,12 +215,22 @@ let printHoles board =
       | _ -> printfn "%s" (returnHole count board);(print (count+1))
    print 1
 
+
 //We setup the board over here.
 let start position = 
    let hole = (4,4,4,4,4,4)
    let pA = {holes = hole ; score = 0; nrSeeds = 24 }
    let pB = {holes = hole ; score = 0; nrSeeds = 24 }
    {PlayerA = pA; PlayerB = pB; Turn = position}
+
+//g17t4564: Return the current number of seeds available on the opponent's side
+let OpponentSeedCount board = 
+    let OppSeeds = 
+        match board.Turn with
+        |North -> board.PlayerB.nrSeeds //g17t4564 : holes in the South side
+        |South -> board.PlayerA.nrSeeds   //g17t4564 : holes in the North side
+    OppSeeds
+
    // g17e4476: We can play the game. Impure input
 let beginGame board = 
    let rec Game board =
