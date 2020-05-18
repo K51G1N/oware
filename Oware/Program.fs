@@ -140,11 +140,6 @@ let chosenHole n board =
     |12 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,eS,0)} }
     |_  -> failwith "{chooseHouse} house is not in 1 and 12 range."
 
-let nextPlayersTurn position = 
-    //Simple function that is used to alternate player turns.
-    match position with
-    | South -> North //this means that South (player A) just had their turn and now it is North's (player two's) turn.
-    | North -> South //this means that North (player B) just had their turn and now it is South's (player one's) turn
 
 let useHouse n board =
    let originalState = board //Need to protec the original state of the board if we make an invalid move
@@ -188,8 +183,8 @@ let useHouse n board =
          // The board itself needs to contain the new score  
          let updatedBoard = {board with PlayerA = pA; PlayerB = pB}
          //Pass the turn
-         let turn = 
-            match turn with
+         let turn c = 
+            match c with
             | North -> South
             | South -> North
 
