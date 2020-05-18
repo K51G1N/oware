@@ -56,9 +56,6 @@ let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
     |_ -> failwith "{incrementHouseSeed} There aren't any houses that do not lie within the range of 1 and 12 (inclusive)."
 
 
-    |_ -> failwith "{incrementSeedCount} out of range"
-
-
 let chosenHole n board = 
     //g19p6350
     //The player takes their turn given a house number 
@@ -105,6 +102,11 @@ let incrementScore lastHousePlaced turn board=
   
   scoreAdder lastHousePlaced board  
 
+let opponentSeeds board =
+   let turn = board.Turn
+   match turn with 
+   | North -> board.PlayerA.nrSeeds
+   | South -> board.PlayerB.nrSeeds
 
 // g17e4476: The tuple set up as specified to return NorthScore (NS) and South Score (SS)
 let score board =
@@ -188,7 +190,7 @@ let useHouse n board =
          | North -> South
          | South -> North
 
-      match 1 with
+      match opponentSeeds board with
       | 0 -> originalState
       | _ -> { updatedBoard with Turn = turn }
 
