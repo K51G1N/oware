@@ -55,22 +55,12 @@ let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
     |12 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS,fS+1)
     |_ -> failwith "{incrementSeedCount} out of range"
 
-let start position = 
-   let hole = (4,4,4,4,4,4)
-   let pA = {holes = hole ; score = 0; nrSeeds = 24 }
-   let pB = {holes = hole ; score = 0; nrSeeds = 24 }
-   {PlayerA = pA; PlayerB = pB; Turn = position}
-
 // g17e4476: The tuple set up as specified to return NorthScore (NS) and South Score (SS)
 let score board =
    let southScore,northScore = board.PlayerA.score , board.PlayerB.score 
    southScore,northScore  
- 
-// Sets up the string of the score for north and south (NS, SS respectively)
-let returnScore board = 
-   let NS = board.PlayerA.score |> string
-   let SS = board.PlayerB.score |> string
-   "North Score: " + NS + "\nSouth Score: " + SS + "\n"
+// ^^^ Sets up the string of the score for north and south (NS, SS respectively)
+
 
 // g17e4476: returns the state of the game using the strings as specified
 let gameState board =
@@ -194,6 +184,12 @@ let useHouse n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
    //failwith "Not implemented"
    *)
 
+
+let returnScore board = 
+   let NS = board.PlayerA.score |> string
+   let SS = board.PlayerB.score |> string
+   "North Score: " + NS + "\nSouth Score: " + SS + "\n"
+
 // g17e4476: returns the nth Hole and the nr of seeds in the nth hole
 let returnHole n board = 
    let hole = getSeeds n board
@@ -208,8 +204,12 @@ let printHoles board =
       | _ -> printfn "%s" (returnHole count board);(print (count+1))
    print 1
 
-
-
+//We setup the board over here.
+let start position = 
+   let hole = (4,4,4,4,4,4)
+   let pA = {holes = hole ; score = 0; nrSeeds = 24 }
+   let pB = {holes = hole ; score = 0; nrSeeds = 24 }
+   {PlayerA = pA; PlayerB = pB; Turn = position}
    // g17e4476: We can play the game. Impure input
 let beginGame board = 
    let rec Game board =
