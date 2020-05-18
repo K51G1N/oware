@@ -17,7 +17,6 @@ type Board = {
    Turn: StartingPosition //g17e4476: North/South we let North go first
 }
 
-
 // g17e4476: Returns the nr of seeds in the nth hole
 let getSeeds n board = 
    let (aN,bN,cN,dN,eN,fN),(aS,bS,cS,dS,eS,fS) = board.PlayerA.holes,board.PlayerB.holes //g17e4476: distinguish North & South
@@ -36,24 +35,8 @@ let getSeeds n board =
    | 12 -> fS
    | _ -> failwith "Invalid Choice of hole"  // g17e4476: If user picks an invalid hole
 
-
-//g18m6734 check if a house is not empty
-let empty n board = 
-   (getSeeds n board) > 0 // will only return true or false
-//g18m6734 checks if a move is valid
-let valid board = 
-   match board = (aN =6, bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)  with 
-   |// I want it to check if a move is valid before making the move HELP ME!
-let useHouse n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
-   match valid (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) with
-   | true  -> incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
-   | false -> failwith "Not your move"
-   //failwith "Not implemented"
-
-
-//Used in the useHouse function 
 //g19p6350
-let incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
+let incrementSeedCount n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
     //Used to increment preceeding houses
     match n with 
     //North side
@@ -70,12 +53,7 @@ let incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =
     |10 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS+1,eS,fS)
     |11 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS+1,fS)
     |12 -> (aS,bS,cS,dS,eS,fS,aS,bS,cS,dS,eS,fS+1)
-    |_ -> failwith "{incrementSeed} out of range"
-
-
-let useHouse n board = failwith "Not implemented"
-
-
+    |_ -> failwith "{incrementSeedCount} out of range"
 
 let start position = 
    let hole = (4,4,4,4,4,4)
@@ -110,9 +88,21 @@ let gameState board =
                 |North -> "North's turn"
                 |South -> "South's turn"
 
+// Player's can't manipulate what doesn't belong to this function verifies this.
+// Using the sumative of each side's respective holes we can tell if it's it's own hole or not
+let checkOwnHole n position = 
+   match position with
+   |South -> match (57-n) < 51 with    // Sum(7-12) 
+             | true -> false
+             | false -> true
+   |North -> match (57-n) > 50 with   // Sum(1->6)
+             | true -> false
+             | false -> true 
+   // I do realise I can change the conditioning and then just have true to true and false to false
+   // will do so later if time permits
 
 
-let chooseHouse n board = 
+let chosenHole n board = 
     //g19p6350
     //The player takes their turn given a house number 
     //then the chosen house is set to 0
@@ -133,7 +123,77 @@ let chooseHouse n board =
     |12 -> {board with PlayerB = {board.PlayerB with holes = (aS,bS,cS,dS,eS,0)} }
     |_  -> failwith "{chooseHouse} house is not in 1 and 12 range."
 
-//Used in the useHouse function below
+let nextPlayersTurn position = 
+    //Simple function that is used to alternate player turns.
+    match position with
+    | South -> North //this means that South (player one) just had their turn and now it is North's (player two's) turn.
+    | North -> South //this means that North (player two) just had their turn and now it is South's (player one's) turn
+
+let useHouse n board =
+   let originalState = board //Need to protec the original state of the board if we make an invalid move
+
+   let endHole =
+      match (getSeeds n board) + n > 12 with  //If the sum goes above 
+      | true -> (getSeeds n board) + n-12
+      | _ -> (getSeeds n board) + n
+   
+    //Validation of hole choice
+   match checkOwnHole n board.Turn with
+   | false -> originalState //Illegal option and returns the original state of the board 
+   | _ ->
+      match getSeeds n board with 
+      | 0 -> board  //User has chosen an empty hole
+      |_ ->
+         let (aN,bN,cN,dN,eN,fN),(aS,bS,cS,dS,eS,fS) = (chosenHole n board).PlayerA.holes,(chosenHole n board).PlayerB.holes 
+         let holesUpdated = (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
+         let nrSeeds = getSeeds n board
+         
+         let rec sowingSeeds n seedsToBeSown holesUpdated startingHole = 
+             let n = match n with // Wrap around function. Each time we get to the end of the board we need to go back to 1
+                     | 13 -> 1 
+                     | _ -> n
+             match  seedsToBeSown with
+             | 0 -> holesUpdated
+             | _ -> match n = startingHole with 
+                      |false -> sowingSeeds (n+1) (seedsToBeSown-1) (incrementSeedCount n holesUpdated) startingHole 
+                      |_ -> sowingSeeds (n+1) seedsToBeSown holesUpdated startingHole // We need to skip over the startingHole
+         
+         let (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) =  sowingSeeds (n+1) nrSeeds holesUpdated n
+         //We need to update the board after distribution of seeds.
+         let pA = {board.PlayerA with holes = (aN,bN,cN,dN,eN,fN); score = board.PlayerA.score; nrSeeds = (aN+bN+cN+dN+eN+fN)} //Simply sum the contents of each hole
+         let pB = {board.PlayerB with holes = (aS,bS,cS,dS,eS,fS); score = board.PlayerB.score; nrSeeds = (aS+bS+cS+dS+eS+fS)} 
+         let board = {board with PlayerA = pA; PlayerB = pB; Turn = board.Turn}
+        
+         //Since we've sown the seeds we now need to update the scoreboard, similar to the way the board was updated.
+         let scoreboard = failwith "Not yet implemented"
+         let pA = failwith ""
+         let pB = failwith ""
+         // The board itself needs to contain the new score  
+         let updatedBoard = failwith ""
+         //Pass the turn
+         let turn = failwith "Not yet implemented -> passTurn board.Turn"
+
+         match 1 with
+         | 0 -> originalState
+         | _ -> { updatedBoard with Turn = turn }
+
+
+
+(*
+//g18m6734 check if a house is not empty
+let empty n board = 
+   (getSeeds n board) > 0 // will only return true or false
+//g18m6734 checks if a move is valid
+let valid board = 
+   match board = (aN =6, bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)  with 
+   |// I want it to check if a move is valid before making the move HELP ME!
+let useHouse n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) = 
+   match valid (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS) with
+   | true  -> incrementSeed n (aN,bN,cN,dN,eN,fN,aS,bS,cS,dS,eS,fS)
+   | false -> failwith "Not your move"
+   //failwith "Not implemented"
+   *)
+
 // g17e4476: returns the nth Hole and the nr of seeds in the nth hole
 let returnHole n board = 
    let hole = getSeeds n board
@@ -148,11 +208,6 @@ let printHoles board =
       | _ -> printfn "%s" (returnHole count board);(print (count+1))
    print 1
 
-let nextPlayersTurn position = 
-    //Simple function that is used to alternate player turns.
-    match position with
-    | South -> North //this means that South (player one) just had their turn and now it is North's (player two's) turn.
-    | North -> South //this means that North (player two) just had their turn and now it is South's (player one's) turn
 
 
    // g17e4476: We can play the game. Impure input
