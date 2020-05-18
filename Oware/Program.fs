@@ -116,8 +116,8 @@ let chosenHole n board =
 let nextPlayersTurn position = 
     //Simple function that is used to alternate player turns.
     match position with
-    | South -> North //this means that South (player one) just had their turn and now it is North's (player two's) turn.
-    | North -> South //this means that North (player two) just had their turn and now it is South's (player one's) turn
+    | South -> North //this means that South (player A) just had their turn and now it is North's (player two's) turn.
+    | North -> South //this means that North (player B) just had their turn and now it is South's (player one's) turn
 
 let useHouse n board =
    let originalState = board //Need to protec the original state of the board if we make an invalid move
